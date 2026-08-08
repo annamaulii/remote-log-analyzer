@@ -1,7 +1,8 @@
+import re
 import sys
 from collections.abc import Iterator
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 
@@ -12,7 +13,21 @@ class LogEntry:
     message: str
 
 
+def parse_duration(value: str) -> timedelta:
+    """Convert text such as 24h into a positive duration."""
+    match = re.fullmatch(r"(\d+)h", value)
+    if not match:
+        raise ValueError("Duration must be positive hours, such as 24h")
+
+    hours = int(match.group(1))
+    if hours <= 0:
+        raise ValueError("Duration must be positive hours, such as 24h")
+
+    return timedelta(hours=hours)
+
+
 def parse_log_line(line: str) -> LogEntry:
+    """Convert one log line into a structured log entry."""
     line = line.rstrip("\r\n")
     parts = line.split(maxsplit=3)
     if len(parts) != 4:
@@ -36,6 +51,7 @@ def iter_log_entries(
     severity: str | None = None,
     since: datetime | None = None,
 ) -> Iterator[LogEntry]:
+    """Yield valid log entries that match the optional filters."""
     with path.open(encoding="utf-8") as log_file:
         for line_number, line in enumerate(log_file, start=1):
             try:
