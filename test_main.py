@@ -1,9 +1,19 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
 
-from main import LogEntry, iter_log_entries, parse_log_line
+from main import LogEntry, iter_log_entries, parse_duration, parse_log_line
+
+
+def test_parse_duration_in_hours() -> None:
+    assert parse_duration("24h") == timedelta(hours=24)
+
+
+@pytest.mark.parametrize("value", ["24", "hours", "-1h", "0h", "h"])
+def test_parse_duration_rejects_invalid_values(value: str) -> None:
+    with pytest.raises(ValueError, match="Duration must be positive hours, such as 24h"):
+        parse_duration(value)
 
 
 def test_parse_valid_log_line() -> None:
