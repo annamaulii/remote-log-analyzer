@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from main import LogEntry, iter_log_entries, parse_duration, parse_log_line
+from main import LogEntry, iter_log_entries, main, parse_duration, parse_log_line
 
 
 def test_parse_duration_in_hours() -> None:
@@ -127,3 +127,41 @@ def test_iter_log_entries_filters_since_inclusively(tmp_path: Path) -> None:
     )
 
     assert [entry.message for entry in entries] == ["At boundary", "After boundary"]
+
+
+def test_main_analyzes_with_level_and_since(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    log_path = tmp_path / "app.log"
+    log_path.write_text(
+        "2026-08-01 13:59:59 ERROR Too old\n"
+        "2026-08-01 14:00:00 INFO Wrong level\n"
+        "2026-08-01 14:00:00 ERROR At boundary\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        ["analyze", str(log_path), "--level", "error", "--since", "24h"],
+        now=datetime(2026, 8, 2, 14, 0, 0),
+    )
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert captured.out == "2026-08-01 14:00:00 ERROR At boundary\n"
+    assert captured.err == ""
+
+
+def test_main_reports_missing_file(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    missing_path = tmp_path / "missing.log"
+
+    exit_code = main(["analyze", str(missing_path)])
+    captured = capsys.readouterr()
+
+    assert exit_code == 1
+    assert captured.out == ""
+    assert captured.err.startswith("Error: ")
+    assert str(missing_path) in captured.err
