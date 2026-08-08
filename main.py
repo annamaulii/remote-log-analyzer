@@ -31,11 +31,16 @@ def parse_log_line(line: str) -> LogEntry:
     )
 
 
-def iter_log_entries(path: Path) -> Iterator[LogEntry]:
+def iter_log_entries(
+    path: Path,
+    severity: str | None = None,
+) -> Iterator[LogEntry]:
     with path.open(encoding="utf-8") as log_file:
         for line_number, line in enumerate(log_file, start=1):
             try:
-                yield parse_log_line(line)
+                entry = parse_log_line(line)
+                if severity is None or entry.severity.casefold() == severity.casefold():
+                    yield entry
             except ValueError as error:
                 malformed_line = line.rstrip("\r\n")
                 print(

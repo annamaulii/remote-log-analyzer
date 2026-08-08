@@ -86,3 +86,18 @@ def test_iter_log_entries_warns_and_continues(
         "Expected date, time, severity, and message; "
         "received: 'Database suddenly disappeared'\n"
     )
+
+
+def test_iter_log_entries_filters_by_severity(tmp_path: Path) -> None:
+    log_path = tmp_path / "app.log"
+    log_path.write_text(
+        "2026-08-01 14:35:22 INFO Application started\n"
+        "2026-08-01 14:36:10 ERROR Database failed\n"
+        "2026-08-01 14:37:05 WARNING Disk space is low\n"
+        "2026-08-01 14:38:30 ERROR Request timed out\n",
+        encoding="utf-8",
+    )
+
+    entries = list(iter_log_entries(log_path, severity="error"))
+
+    assert [entry.severity for entry in entries] == ["ERROR", "ERROR"]
