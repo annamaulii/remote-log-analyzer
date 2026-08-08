@@ -1,3 +1,4 @@
+import argparse
 import re
 import sys
 from collections.abc import Iterator
@@ -68,3 +69,31 @@ def iter_log_entries(
                     f"received: {malformed_line!r}",
                     file=sys.stderr,
                 )
+
+
+def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
+    """Run the remote-log command-line interface."""
+    parser = argparse.ArgumentParser(prog="remote-log")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    analyze_parser = subparsers.add_parser("analyze", help="Filter log entries")
+    analyze_parser.add_argument("path", type=Path)
+    analyze_parser.add_argument("--level")
+    analyze_parser.add_argument("--since", type=parse_duration)
+    args = parser.parse_args(argv)
+
+    since = (now or datetime.now()) - args.since if args.since else None
+    try:
+        for entry in iter_log_entries(args.path, severity=args.level, since=since):
+            print(
+                f"{entry.timestamp:%Y-%m-%d %H:%M:%S} "
+                f"{entry.severity} {entry.message}"
+            )
+    except OSError as error:
+        print(f"Error: {error}", file=sys.stderr)
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

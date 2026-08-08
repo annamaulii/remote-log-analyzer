@@ -9,6 +9,9 @@ description = "Incrementally analyze application log files."
 requires-python = ">=3.11"
 dependencies = []
 
+[project.scripts]
+remote-log = "main:main"
+
 [project.optional-dependencies]
 dev = ["pytest>=9,<10"]
 
