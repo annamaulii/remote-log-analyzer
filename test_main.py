@@ -101,3 +101,19 @@ def test_iter_log_entries_filters_by_severity(tmp_path: Path) -> None:
     entries = list(iter_log_entries(log_path, severity="error"))
 
     assert [entry.severity for entry in entries] == ["ERROR", "ERROR"]
+
+
+def test_iter_log_entries_filters_since_inclusively(tmp_path: Path) -> None:
+    log_path = tmp_path / "app.log"
+    log_path.write_text(
+        "2026-08-01 13:59:59 INFO Before boundary\n"
+        "2026-08-01 14:00:00 ERROR At boundary\n"
+        "2026-08-01 14:00:01 WARNING After boundary\n",
+        encoding="utf-8",
+    )
+
+    entries = list(
+        iter_log_entries(log_path, since=datetime(2026, 8, 1, 14, 0, 0))
+    )
+
+    assert [entry.message for entry in entries] == ["At boundary", "After boundary"]
