@@ -37,7 +37,9 @@ def iter_log_entries(path: Path) -> Iterator[LogEntry]:
             try:
                 yield parse_log_line(line)
             except ValueError as error:
+                malformed_line = line.rstrip("\r\n")
                 print(
-                    f"Warning on line {line_number}: {error}",
+                    f"Warning on line {line_number}: {error}; "
+                    f"received: {malformed_line!r}",
                     file=sys.stderr,
                 )

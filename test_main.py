@@ -83,5 +83,6 @@ def test_iter_log_entries_warns_and_continues(
     assert captured.out == ""
     assert captured.err == (
         "Warning on line 2: "
-        "Expected date, time, severity, and message\n"
+        "Expected date, time, severity, and message; "
+        "received: 'Database suddenly disappeared'\n"
     )
