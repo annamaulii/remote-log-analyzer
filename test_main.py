@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from remote_log_analyzer.cli import main
+from remote_log_analyzer.config import load_config
 from remote_log_analyzer.core import (
     LogEntry,
     iter_log_entries,
@@ -15,6 +16,13 @@ from remote_log_analyzer.core import (
 
 def test_parse_duration_in_hours() -> None:
     assert parse_duration("24h") == timedelta(hours=24)
+
+
+def test_example_config_is_valid() -> None:
+    config = load_config(Path(__file__).with_name("remote-log.example.toml"))
+
+    assert config.level == "error"
+    assert config.since == timedelta(hours=24)
 
 
 @pytest.mark.parametrize("value", ["24", "hours", "-1h", "0h", "h"])
