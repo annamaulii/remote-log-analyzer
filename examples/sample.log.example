@@ -1,0 +1,5 @@
+2026-08-09 10:00:00 INFO Application started
+2026-08-09 10:01:00 ERROR Database failed
+Database suddenly disappeared
+2026-08-09 10:02:00 WARNING Disk space is low
+2026-08-09 10:03:00 ERROR Database failed
