@@ -5,3 +5,11 @@ __pycache__/
 *.py[cod]
 .DS_Store
 *.egg-info/
+.env
+.env.*
+!.env.example
+*.log
+*.key
+*.pem
+*.p12
+*.pfx
