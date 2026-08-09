@@ -10,10 +10,7 @@ requires-python = ">=3.11"
 dependencies = []
 
 [project.scripts]
-remote-log = "main:main"
+remote-log = "remote_log_analyzer.cli:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=9,<10"]
-
-[tool.setuptools]
-py-modules = ["main"]

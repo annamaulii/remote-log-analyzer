@@ -4,7 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from main import LogEntry, iter_log_entries, main, parse_duration, parse_log_line
+from remote_log_analyzer.cli import main
+from remote_log_analyzer.core import (
+    LogEntry,
+    iter_log_entries,
+    parse_duration,
+    parse_log_line,
+)
 
 
 def test_parse_duration_in_hours() -> None:
