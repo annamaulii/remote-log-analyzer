@@ -4,10 +4,26 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "remote-log-analyzer"
-version = "0.1.0"
+version = "1.0.0"
 description = "Incrementally analyze application log files."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Anna-Sophie Maul" }]
 requires-python = ">=3.11"
 dependencies = []
+keywords = ["cli", "logs", "monitoring"]
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: System :: Logging",
+]
+
+[project.urls]
+Repository = "https://github.com/annamaulii/remote-log-analyzer"
+Issues = "https://github.com/annamaulii/remote-log-analyzer/issues"
 
 [project.scripts]
 remote-log = "remote_log_analyzer.cli:main"
