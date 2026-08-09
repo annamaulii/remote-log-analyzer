@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -165,3 +166,44 @@ def test_main_reports_missing_file(
     assert captured.out == ""
     assert captured.err.startswith("Error: ")
     assert str(missing_path) in captured.err
+
+
+def test_main_summarizes_as_json(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    log_path = tmp_path / "app.log"
+    log_path.write_text(
+        "2026-08-01 14:00:00 INFO Started\n"
+        "2026-08-01 14:01:00 ERROR Database failed\n"
+        "2026-08-01 14:02:00 ERROR Database failed\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(["summary", str(log_path), "--format", "json"])
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert json.loads(captured.out) == {
+        "severity_counts": {"ERROR": 2, "INFO": 1},
+        "error_types": {"Database failed": 2},
+    }
+
+
+def test_main_summarizes_as_markdown(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    log_path = tmp_path / "app.log"
+    log_path.write_text(
+        "2026-08-01 14:00:00 ERROR Disk | full\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(["summary", str(log_path), "--format", "markdown"])
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "# Log Summary" in captured.out
+    assert "| ERROR | 1 |" in captured.out
+    assert r"| Disk \| full | 1 |" in captured.out
