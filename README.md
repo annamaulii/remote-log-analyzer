@@ -87,6 +87,8 @@ Malformed-line warnings use standard error, so redirected report output remains 
 
 ## Configuration
 
+Copy `remote-log.example.toml`, then change or remove settings as needed. For example, `since` accepts any positive whole-hour value such as `1h`, `48h`, or `168h`. Command-line options override configured values.
+
 ```toml
 [analyze]
 level = "error"
@@ -152,10 +154,17 @@ Log files can contain credentials, personal data, or internal system details. Re
 - Configuration currently applies to the `analyze` command only.
 - Summary memory use grows with the number of unique error messages.
 
+## License
+
+Released under the [MIT License](LICENSE).
+
+## Development
+
+Built as a project-based learning and portfolio project using an AI-assisted engineering workflow with OpenAI Codex. The author remains responsible for the design decisions, code review, testing, and final verification.
+
 ## Roadmap
 
 - Add more relative-duration units
 - Support configurable log formats
 - Add output-file options without shell redirection
 - Add performance benchmarks for very large files
-
